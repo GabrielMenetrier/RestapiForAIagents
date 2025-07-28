@@ -3,6 +3,10 @@ import GoogleNews as GoogleNews
 
 app = Flask(__name__)
 
+@app.route('/teste', methods=['GET'])
+def teste():
+    return jsonify({"status": "ok", "mensagem": "API funcionando!"})
+
 def buscar_noticias(tema, lang='pt', region='BR', period='1d', max_results=10):
     """
     Busca notícias sobre um tema usando GoogleNews.
