@@ -2,8 +2,6 @@ from flask import Flask, request, jsonify
 import GoogleNews as GoogleNews
 import math
 
-
-
 app = Flask(__name__)
 
 @app.route('/teste', methods=['GET'])
@@ -24,8 +22,11 @@ def limpar_nans(noticias):
     for noticia in noticias:
         nova = {}
         for k, v in noticia.items():
+            # Garante que todos os valores sejam serializáveis
             if isinstance(v, float) and math.isnan(v):
-                nova[k] = None  # ou '' dependendo do seu caso
+                nova[k] = None
+            elif isinstance(v, (dict, list)):
+                nova[k] = str(v)
             else:
                 nova[k] = v
         resultado.append(nova)
@@ -33,7 +34,6 @@ def limpar_nans(noticias):
 
 # Endpoint que chama a função
 @app.route('/noticias', methods=['POST'])
-
 def get_news():
     try:
         dados = request.json
@@ -48,12 +48,12 @@ def get_news():
 
         noticias = buscar_noticias(tema, lang, region, period, max_results)
         noticias_limpa = limpar_nans(noticias)
+        # Garante que a resposta seja sempre um JSON válido
         return jsonify({"status": "sucesso", "noticias": noticias_limpa})
 
     except Exception as e:
+        # Retorna erro como JSON
         return jsonify({"status": "erro", "mensagem": str(e)}), 400
-
-
 
 if __name__ == '__main__':
     app.run()
