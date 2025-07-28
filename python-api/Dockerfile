@@ -1,16 +1,15 @@
+# Dockerfile (este arquivo fica na raiz do seu repositório)
 FROM python:3.9-slim
 
-# Set the working directory
+# 1. Instala o git
+RUN apt-get update && apt-get install -y git
+
+# 2. Clona SEU próprio repositório (incluindo este Dockerfile)
+RUN git clone https://github.com/seu-usuario/seu-repositorio.git /app
+
+# 3. Configura o ambiente
 WORKDIR /app
+RUN pip install -r requirements.txt
 
-# Copy the requirements file
-COPY requirements.txt .
-
-# Install the dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the application code
-COPY . .
-
-# Set the entry point for the container
-ENTRYPOINT ["sh", "entrypoint.sh"]
+EXPOSE 5000
+CMD ["python", "app.py"]
