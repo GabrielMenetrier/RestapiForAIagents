@@ -1,27 +1,42 @@
-from fastapi import FastAPI
+from flask import Flask, request, jsonify
 
-app = FastAPI()
+app = Flask(__name__)
 
+# Função que queremos chamar via API
+def calcular_imc(peso, altura):
+    """Calcula o Índice de Massa Corporal"""
+    return peso / (altura ** 2)
 
-def minha_funcao(param1, param2):
-    resultado = param1 + param2  # Exemplo de operação
-    return resultado
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Python API"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "query": q}
-
-@app.route('/nome-do-endpoint', methods=['POST'])
-def endpoint():
-    # 1. Pega os parâmetros
-    dados = request.json
+# Endpoint que chama a função
+@app.route('/calcular-imc', methods=['POST'])
+def endpoint_imc():
+    try:
+        # Recebe os parâmetros do corpo da requisição (JSON)
+        dados = request.json
+        peso = float(dados['peso'])
+        altura = float(dados['altura'])
+        
+        # Chama a função
+        resultado = calcular_imc(peso, altura)
+        
+        # Retorna a resposta como JSON
+        return jsonify({
+            "status": "sucesso",
+            "imc": round(resultado, 2),
+            "classificacao": classificar_imc(resultado)
+        })
     
-    # 2. Chama a função
-    resultado = minha_funcao(dados['param1'], dados['param2'])
-    
-    # 3. Retorna a resposta
-    return jsonify({"resultado": resultado})
+    except Exception as e:
+        return jsonify({"status": "erro", "mensagem": str(e)}), 400
+
+# Função auxiliar (opcional)
+def classificar_imc(imc):
+    if imc < 18.5:
+        return "Abaixo do peso"
+    elif 18.5 <= imc < 25:
+        return "Peso normal"
+    else:
+        return "Sobrepeso"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
