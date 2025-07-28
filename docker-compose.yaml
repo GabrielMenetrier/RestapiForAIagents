@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   api:
-    image: sua-api:latest
+    image: restapi:latest
     deploy:
       replicas: 2
       labels:
         - traefik.enable=true
         - traefik.http.routers.api.rule=Host(`restapi.agenteaiteste.shop`)
-        - traefik.http.routers.api.tls=true
+        - traefik.http.services.api.loadbalancer.server.port=5000  # ← Porta explícita
     networks:
       - AgenteAIteste
 
