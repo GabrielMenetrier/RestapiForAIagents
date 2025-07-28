@@ -10,8 +10,8 @@ services:
         - traefik.http.routers.api.rule=Host(`restapi.agenteaiteste.shop`)
         - traefik.http.routers.api.tls=true
     networks:
-      - traefik-public
+      - AgenteAIteste
 
 networks:
-  traefik-public:
+  AgenteAIteste:
     external: true
