@@ -32,7 +32,7 @@ def limpar_nans(noticias):
     return resultado
 
 # Endpoint que chama a função
-@app.route('/notícias', methods=['POST'])
+@app.route('/noticias', methods=['POST'])
 
 def get_news():
     try:
