@@ -5,7 +5,7 @@ FROM python:3.9-slim
 RUN apt-get update && apt-get install -y git
 
 # 2. Clona SEU próprio repositório (incluindo este Dockerfile)
-RUN git clone https://github.com/seu-usuario/seu-repositorio.git /app
+RUN git clone https://github.com/GabrielMenetrier/RestapiForAIagents /app
 
 # 3. Configura o ambiente
 WORKDIR /app
