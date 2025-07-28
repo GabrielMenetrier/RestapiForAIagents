@@ -1,5 +1,8 @@
 from flask import Flask, request, jsonify
 import GoogleNews as GoogleNews
+import math
+
+
 
 app = Flask(__name__)
 
@@ -16,6 +19,17 @@ def buscar_noticias(tema, lang='pt', region='BR', period='1d', max_results=10):
     resultados = noticias.results()[:max_results]
     return resultados
 
+def limpar_nans(noticias):
+    resultado = []
+    for noticia in noticias:
+        nova = {}
+        for k, v in noticia.items():
+            if isinstance(v, float) and math.isnan(v):
+                nova[k] = None  # ou '' dependendo do seu caso
+            else:
+                nova[k] = v
+        resultado.append(nova)
+    return resultado
 
 # Endpoint que chama a função
 @app.route('/notícias', methods=['POST'])
@@ -33,7 +47,8 @@ def get_news():
             return jsonify({"status": "erro", "mensagem": "Parâmetro 'tema' é obrigatório."}), 400
 
         noticias = buscar_noticias(tema, lang, region, period, max_results)
-        return jsonify({"status": "sucesso", "noticias": noticias})
+        noticias_limpa = limpar_nans(noticias)
+        return jsonify({"status": "sucesso", "noticias": noticias_limpa})
 
     except Exception as e:
         return jsonify({"status": "erro", "mensagem": str(e)}), 400
