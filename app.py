@@ -42,17 +42,23 @@ def get_news():
         region = dados.get('region', 'BR')
         period = dados.get('period', '1d')
         max_results = int(dados.get('max_results', 50))
+        retornar_links = bool(dados.get('retornar_links', True))  # Novo parâmetro
 
         if not tema:
             return jsonify({"status": "erro", "mensagem": "Parâmetro 'tema' é obrigatório."}), 400
 
         noticias = buscar_noticias(tema, lang, region, period, max_results)
         noticias_limpa = limpar_nans(noticias)
-        # Garante que a resposta seja sempre um JSON válido
+
+        # Remove os links se retornar_links for False
+        if not retornar_links:
+            for noticia in noticias_limpa:
+                noticia.pop('link', None)
+                noticia.pop('media', None)  # Remove também a mídia, se desejar
+
         return jsonify({"status": "sucesso", "noticias": noticias_limpa})
 
     except Exception as e:
-        # Retorna erro como JSON
         return jsonify({"status": "erro", "mensagem": str(e)}), 400
 
 if __name__ == '__main__':
