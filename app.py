@@ -42,7 +42,7 @@ def get_news():
         region = dados.get('region', 'BR')
         period = dados.get('period', '1d')
         max_results = int(dados.get('max_results', 50))
-        retornar_links = bool(dados.get('retornar_links', True))  # Novo parâmetro
+        retornar_links = str(dados.get('retornar_links', 'true')).lower() == 'true'  # Novo parâmetro
 
         if not tema:
             return jsonify({"status": "erro", "mensagem": "Parâmetro 'tema' é obrigatório."}), 400
@@ -54,7 +54,7 @@ def get_news():
         if not retornar_links:
             for noticia in noticias_limpa:
                 noticia.pop('link', None)
-                noticia.pop('media', None)  # Remove também a mídia, se desejar
+                noticia.pop('img', None)  # Remove também a mídia, se desejar
 
         return jsonify({"status": "sucesso", "noticias": noticias_limpa})
 
